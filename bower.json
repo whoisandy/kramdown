@@ -1,0 +1,20 @@
+{
+  "name": "kramdown",
+  "version": "0.0.0",
+  "homepage": "https://github.com/whoisandie/kramdown",
+  "authors": [
+    "Bhargav Anand <rjn143@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "codemirror": "~4.6.0",
+    "marked": "~0.3.2"
+  }
+}
