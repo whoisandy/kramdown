@@ -18,9 +18,12 @@
   "trailing": true,
   "smarttabs": true,
   "multistr": true,
+  "sub": true,
   "globals": {
     "marked": true,
     "CodeMirror": true,
+    "Kramdown": true,
+    "KramdownPlugins": true,
     "strict": true
   }
 }
