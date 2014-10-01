@@ -2,12 +2,21 @@ var gulp = require('gulp'),
     plugins = require('gulp-load-plugins')();
 
 var jsFiles = [
-  'src/commands.js',
-  'src/kramdown.js'
+  'src/kramdown.js',
+  'src/commands.js'
 ];
 
+gulp.task('connect', function(){
+  return gulp.src(['.', 'docs'])
+    .pipe(plugins.webserver({
+      port: 8000,
+      livereload: true,
+      open: true
+    }));
+});
+
 gulp.task('css', function(){
-  return gulp.src('src/kramdown.scss')
+  return gulp.src('src/*.scss')
     .pipe(plugins.sass())
     .pipe(gulp.dest('docs'));
 });
@@ -22,8 +31,8 @@ gulp.task('concat', ['lint'], function(){
   return gulp.src(jsFiles)
     .pipe(plugins.concat('kramdown.js'))
     .pipe(plugins.wrapper({
-      header: '(function(){\n',
-      footer: '\n})();'
+      header: '(function(global){\n\n' + '\'use strict;\'' + '\n\n',
+      footer: '\n\nglobal.Kramdown = Kramdown;\n\n})(this);'
     }))
     .pipe(gulp.dest('docs'));
 });
@@ -31,8 +40,8 @@ gulp.task('concat', ['lint'], function(){
 
 gulp.task('watch', function(){
   gulp.watch('src/kramdown.scss', ['css']);
-  gulp.watch(jsFiles, ['lint'])
+  gulp.watch(jsFiles, ['concat']);
 });
 
-gulp.task('default', ['concat', 'css', 'watch']);
+gulp.task('default', ['connect', 'concat', 'css', 'watch']);
 // Integrate the build process later;
