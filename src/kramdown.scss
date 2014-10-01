@@ -1,5 +1,13 @@
-$toolbarColor: #344;
+// Variables
+@import 'variables';
 
-body{
-  background: $toolbarColor;
-}
+// Import fonticons
+@import 'fonticons';
+
+// Default editor styles. DO NOT TWEAK THESE
+@import 'codemirror';
+
+// Theme to be used
+// To create a  new theme follow the same schema
+// as documented in the paper scss file.
+@import 'paper';

@@ -1,9 +1,13 @@
-'use strict';
-
 var listRE = /^(\s*)([*+-]|(\d+)\.)(\s+)/,
-  unorderedBullets = '*+-';
+    unorderedBullets = '*+-';
 
-CodeMirror.commands.newlineAndIndentContinueMarkdownList = function(cm) {
+if(! window.CodeMirror){
+  throw new Error('Kramdown requires CodeMirror as a dependency');
+}
+
+Kramdown.commands = CodeMirror.commands;
+
+Kramdown.commands.newlineAndIndentContinueMarkdownList = function(cm) {
   if (cm.getOption('disableInput')) {
     return CodeMirror.Pass;
   }
