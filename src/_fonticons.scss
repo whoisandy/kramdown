@@ -1,3 +1,5 @@
+@import 'variables';
+
 @font-face {
   font-family: 'icomoon';
   src: url($fonts + 'icomoon.eot?-y1kuul');
@@ -5,9 +7,8 @@
   font-weight: normal;
   font-style: normal; }
 
-[class^="icon-"], [class*=" icon-"] {
-  font-family: 'icomoon';
-  speak: none;
+[class^="kramdown-toolbar-"], [class*=" kramdown-toolbar-"] {
+  font-family: 'icomoon' !important;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -15,43 +16,48 @@
   line-height: 1;
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
+  -moz-osx-font-smoothing: grayscale;
+}
 
-.icon-image:before {
-  content: "\e600"; }
-
-.icon-video:before {
-  content: "\e60a"; }
-
-.icon-undo:before {
-  content: "\e601"; }
-
-.icon-redo:before {
-  content: "\e602"; }
-
-.icon-quote:before {
-  content: "\e60b"; }
-
-.icon-ul:before {
-  content: "\e603"; }
-
-.icon-ol:before {
-  content: "\e604"; }
-
-.icon-link:before {
-  content: "\e605"; }
-
-.icon-header:before {
-  content: "\e60c"; }
-
-.icon-bold:before {
-  content: "\e606"; }
-
-.icon-italic:before {
-  content: "\e607"; }
-
-.icon-strike:before {
-  content: "\e608"; }
-
-.icon-code:before {
-  content: "\e609"; }
+.kramdown-toolbar-image:before {
+  content: "\e600";
+}
+.kramdown-toolbar-video:before {
+  content: "\e60a";
+}
+.kramdown-toolbar-undo:before {
+  content: "\e601";
+}
+.kramdown-toolbar-redo:before {
+  content: "\e602";
+}
+.kramdown-toolbar-quote:before {
+  content: "\e60b";
+}
+.kramdown-toolbar-stats:before {
+  content: "\e60d";
+}
+.kramdown-toolbar-ul:before {
+  content: "\e603";
+}
+.kramdown-toolbar-ol:before {
+  content: "\e604";
+}
+.kramdown-toolbar-link:before {
+  content: "\e605";
+}
+.kramdown-toolbar-heading:before {
+  content: "\e60c";
+}
+.kramdown-toolbar-bold:before {
+  content: "\e606";
+}
+.kramdown-toolbar-italic:before {
+  content: "\e607";
+}
+.kramdown-toolbar-strike:before {
+  content: "\e608";
+}
+.kramdown-toolbar-code:before {
+  content: "\e609";
+}
