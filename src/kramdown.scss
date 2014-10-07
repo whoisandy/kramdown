@@ -113,3 +113,11 @@
     }
   }
 }
+
+// User styling here
+.kramdown-toolbar-advanced{
+  &:before{
+    padding: 3px;
+    content: '';
+  }
+}
