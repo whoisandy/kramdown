@@ -3,7 +3,9 @@
 
 .CodeMirror-scroll {
   /* Set scrolling behaviour here */
-  overflow: auto; }
+  overflow: auto;
+  cursor: text;
+}
 
 /* PADDING */
 .CodeMirror-lines {
@@ -78,6 +80,7 @@
   overflow: hidden; }
 
 .CodeMirror-scroll {
+  padding-top: 12px;
   /* 30px is the magic margin used to hide the element's real scrollbars */
   /* See overflow: hidden in .CodeMirror, and the paddings in .CodeMirror-sizer */
   margin-bottom: -30px;
