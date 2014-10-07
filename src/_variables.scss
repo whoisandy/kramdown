@@ -1,1 +1,13 @@
 $fonts: 'fonts/';
+
+// Toolbar config
+$toolbarBgColor: #f3f3f3;
+$toolbarBorderColor: darken($toolbarBgColor, 10%);
+$toolbarBtnColor: #2c3e50;
+$toolbarBtnColorHover: #1f78d8;
+$toolbarBtnTextColorHover: #ffffff;
+
+
+// Statusbar config
+$statusBarBgColor: $toolbarBgColor;
+$statusBarBorderColor: $toolbarBorderColor;
