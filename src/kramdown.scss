@@ -11,3 +11,105 @@
 // To create a  new theme follow the same schema
 // as documented in the paper scss file.
 @import 'paper';
+
+
+.kramdown-box{
+  font-family: "Menlo", monospace;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.kramdown-editor{
+  padding: 0 4px;
+}
+
+.kramdown-toolbar {
+  margin: 0;
+  position: relative;
+  background: $toolbarBgColor;
+  &.kramdown-shadow{
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  }
+  &, & > li{
+    padding: 0;
+    list-style: none;
+  }
+  li{
+    margin: 0;
+    display: inline-block;
+    a{
+      display: block;
+      padding: 10px;
+      position: relative;
+      outline: none;
+      border: none;
+      text-decoration: none !important;
+      text-align: center;
+      opacity: 0.9;
+      cursor: pointer;
+      color: $toolbarBtnColor;
+      &:before{
+        line-height: 14px;
+      }
+      &:hover, &.active{
+        background: $toolbarBtnColorHover;
+        color: $toolbarBtnTextColorHover;
+      }
+    }
+  }
+}
+
+.kramdown-tooltip{
+  position: relative;
+  span{
+    margin: 0;
+    padding: 4px;
+    position: absolute;
+    display: none;
+    background: #333;
+    color: #ffffff;
+    z-index: 1006;
+  }
+}
+
+.kramdown-statusbar{
+  background: $statusBarBgColor;
+  padding: 10px 0;
+  text-align: right;
+  span{
+    padding: 0 18px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    &.kd-stats{
+      &:before{
+        font-size: 14px;
+      }
+      &:after{
+        content: ' Stats';
+      }
+      float: left;
+    }
+    &.lines{
+      &:before{
+        content: "Lines: ";
+      }
+    }
+    &.words{
+      &:before{
+        content: "Words: ";
+      }
+    }
+    &.chars{
+      &:before{
+        content: "Chars: ";
+      }
+    }
+    &.cursor{
+      &:before{
+        content: "Cursor: ";
+      }
+    }
+  }
+}
