@@ -28,6 +28,7 @@ var removeAttr = function(elem, name){
   elem.removeAttribute(name);
 };
 
+
 var offset = function(elem){
   var off = {};
   off.left = elem.offsetLeft;
@@ -42,6 +43,14 @@ var innerHeight = function(elem){
 
 var innerWidth = function(elem){
   return elem.offsetWidth;
+};
+
+var position = function(parent, child){
+  var pos = {};
+  pos.left = (offset(parent).left - (innerWidth(child) - innerWidth(parent))/2) + 'px';
+  pos.top = (offset(parent).top - (innerHeight(child) - innerHeight(parent))/2) + 'px';
+
+  return pos;
 };
 
 var extendObj = function(){
@@ -498,6 +507,7 @@ Kramdown.prototype._addToolbarItem = function(name, title){
   var elem = this._buildToolbarItem(name, title);
   obj.bar.appendChild(elem.el);
   obj.tip.appendChild(elem.et);
+
   return elem.el;
 };
 
@@ -510,6 +520,10 @@ Kramdown.prototype._removeToolbarItem = function(name){
   obj.tip.removeChild(et);
 };
 
+Kramdown.prototype._bindToolbarEvent = function(ev, el, callback){
+  el.addEventListener(ev, callback);
+};
+
 Kramdown.prototype._buildTooltipItem = function(button){
   var tt = document.createElement('span');
   addClass(tt, 'kramdown-tooltip-' + button);
@@ -519,38 +533,43 @@ Kramdown.prototype._buildTooltipItem = function(button){
 };
 
 Kramdown.prototype._buildToolbarItem = function(name, title){
-  var el, et, elLink, self;
-  elLink = document.createElement('a');
-  el = document.createElement('li');
+  var li, tip, link, mover, mout;
+  link = document.createElement('a');
+  li = document.createElement('li');
 
-  addAttr(elLink, 'href', '#');
-  addClass(elLink, 'kramdown-toolbar-' + name);
+  addAttr(link, 'href', 'javascript:void(0)');
+  addClass(link, 'kramdown-toolbar-' + name);
+
+  mover = function(e){
+    var tt = document.querySelector('.kramdown-tooltip-' + name);
+    tt.style.display = 'block';
+    tt.style.left = position(e.toElement, tt).left;
+    return false;
+  };
+
+  mout = function(){
+    var tt = document.querySelector('.kramdown-tooltip-' + name);
+    tt.style.display = 'none';
+    return false;
+  };
 
   if(!buttonNames.hasOwnProperty(name)){
     buttonNames[name] = title;
   }
 
-  self = this;
-  elLink.addEventListener('click', function(){
+  var self = this;
+  link.addEventListener('click', function(){
     self._action(name);
     return false;
   });
-  el.addEventListener('mouseover', function(){
-    var eTip = document.querySelector('.kramdown-tooltip-' + name);
-    eTip.style.display = 'block';
-    eTip.style.left = (offset(elLink).left - (innerWidth(eTip) - innerWidth(elLink))/2) + 'px';
-    return false;
-  });
-  el.addEventListener('mouseout', function(){
-    var tt = document.querySelector('.kramdown-tooltip-' + name);
-    tt.style.display = '';
-    return false;
-  });
 
-  et = this._buildTooltipItem(name);
-  el.appendChild(elLink);
+  this._bindToolbarEvent('mouseover', li, mover);
+  this._bindToolbarEvent('mouseout', li, mout);
 
-  return { el: el, et: et };
+  tip = this._buildTooltipItem(name);
+  li.appendChild(link);
+
+  return { el: li, et: tip };
 };
 
 Kramdown.prototype._createToolbar = function(buttons){
