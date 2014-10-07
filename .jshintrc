@@ -19,6 +19,7 @@
   "trailing": true,
   "smarttabs": true,
   "multistr": true,
+  "scripturl": true,
   "sub": true,
   "globals": {
     "marked": true,
