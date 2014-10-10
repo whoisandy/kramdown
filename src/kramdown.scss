@@ -17,10 +17,11 @@
   font-family: "Menlo", monospace;
   font-weight: normal;
   font-size: 14px;
+  border: 1px $boxBorderColor solid;
 }
 
 .kramdown-editor{
-  padding: 0 4px;
+  padding: 0 10px;
 }
 
 .kramdown-toolbar {
@@ -41,21 +42,55 @@
     display: inline-block;
     a{
       display: block;
-      padding: 10px;
+      padding: 12px;
       position: relative;
       outline: none;
       border: none;
       text-decoration: none !important;
-      text-align: center;
+      text-align: left;
       opacity: 0.9;
       cursor: pointer;
       color: $toolbarBtnColor;
       &:before{
         line-height: 14px;
       }
-      &:hover, &.active{
+      &:hover{
         background: $toolbarBtnColorHover;
         color: $toolbarBtnTextColorHover;
+      }
+    }
+    &.active > a{
+        background: $toolbarBtnColorHover;
+        color: $toolbarBtnTextColorHover;
+    }
+    &.kramdown-has-dropdown{
+      .kramdown-toolbar-dropdown {
+        display: none;
+      }
+      &.active{
+        .kramdown-toolbar-dropdown{
+          display: block;
+        }
+      }
+    }
+  }
+  .kramdown-toolbar-dropdown{
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    background: $toolbarBgColor;
+    overflow: hidden;
+    z-index: 1110;
+
+    -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    -moz-box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    li{
+      display: block;
+      width: 120px;
+      a{
+        display: block;
+        text-decoration: none;
       }
     }
   }
@@ -76,18 +111,17 @@
 
 .kramdown-statusbar{
   background: $statusBarBgColor;
-  padding: 10px 0;
+  padding: 12px 0;
   text-align: right;
   span{
     padding: 0 18px;
-    font-family: 'Helvetica Neue', sans-serif;
     font-size: 12px;
-    &.kd-stats{
+    &.stats{
       &:before{
         font-size: 14px;
       }
       &:after{
-        content: ' Stats';
+        content: 'Statistics';
       }
       float: left;
     }
@@ -117,7 +151,7 @@
 // User styling here
 .kramdown-toolbar-advanced{
   &:before{
-    padding: 3px;
+    padding: 4px;
     content: '';
   }
 }
