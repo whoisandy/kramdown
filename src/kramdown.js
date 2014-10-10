@@ -571,9 +571,6 @@ Kramdown.prototype._initPluginApi = function(){
 };
 
 Kramdown.prototype._initApi = function(){
-  // Bind all the common events
-  this._bindEvents();
-
   // Bootstrap modules in order
   this._initButtonApi();
   this._initPluginApi();
@@ -702,7 +699,7 @@ Kramdown.prototype._addToolbarItemDropdown = function(button, dropdown){
   }
 
   function callback(e){
-    e.target.callback();
+    e.target.callback.apply();
     hideDropdown(e);
   }
 
