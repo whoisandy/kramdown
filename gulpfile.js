@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     plugins = require('gulp-load-plugins')();
 
 var jsFiles = [
+  'src/markdown.js',
   'src/kramdown.js',
   'src/commands.js'
 ];
@@ -22,7 +23,7 @@ gulp.task('css', function(){
 });
 
 gulp.task('lint', function(){
-  return gulp.src(jsFiles)
+  return gulp.src(['src/commands.js', 'src/kramdown.js'])
     .pipe(plugins.jshint())
     .pipe(plugins.jshint.reporter('jshint-stylish'));
 });
