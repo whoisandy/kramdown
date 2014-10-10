@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Kramdown Editor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="kramdown.css"/>
+        <style type="text/css">
+            body{
+                margin: 0;
+                padding: 0;
+            }
+
+            #wrapper{
+                width: 800px;
+                margin: 0 auto;
+                padding: 0;
+            }
+
+            #wrapper h1{
+                margin: 20px 0;
+                padding: 0;
+                text-align: center;
+                font-family: 'Helvetica Neue', sans-serif;
+                font-weight: 200;
+                font-size: 32px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Add your site or application content here -->
+        <div id="wrapper">
+            <h1>Kramdown</h1>
+            <textarea name="post" class="post"></textarea>
+        </div>
+
+        <!-- Vendor scripts -->
+        <script src="../vendor/codemirror/lib/codemirror.js"></script>
+        <script src="../vendor/codemirror/mode/xml/xml.js"></script>
+        <script src="kramdown.js"></script>
+
+        <!-- Kramdown library -->
+        <script type="text/javascript">
+            if (!KramdownPlugins) var KramdownPlugins = {};
+
+            KramdownPlugins.expander = function(){
+                return {
+                    init: function () {
+                        var btn = this.button.add('advanced', 'Advanced');
+                        var dropdown = [
+                            {
+                                title: 'insertlink',
+                                name: 'Insert link',
+                                callback: this.expander.textExpander
+                            },
+                            {
+                                title: 'removelink',
+                                name: 'Remove link',
+                                callback: this.expander.log
+                            }
+                        ];
+                        this.button.addDropdown(btn, dropdown);
+                    },
+                    textExpander: function () {
+                        this.colors.colorize();
+                    },
+                    log: function(){
+                        console.log('simple log message');
+                    }
+                };
+            };
+
+            KramdownPlugins.colors = function(){
+                return {
+                    init: function(){
+                        this.colors.log();
+                    },
+                    colorize: function(){
+                        console.log('Colorizing text here...')
+                    },
+                    log: function(){
+                        console.log('Logging from the colorize plugin');
+                    }
+                };
+            };
+        </script>
+
+        <script>
+            var post = new Kramdown({
+                plugins: ['expander', 'colors']
+            });
+        </script>
+    </body>
+</html>

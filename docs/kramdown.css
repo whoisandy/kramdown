@@ -1,0 +1,483 @@
+@font-face {
+  font-family: 'icomoon';
+  src: url('fonts/icomoon.eot?-y1kuul');
+  src: url('fonts/icomoon.eot?#iefix-y1kuul') format('embedded-opentype'), url('fonts/icomoon.woff?-y1kuul') format('woff'), url('fonts/icomoon.ttf?-y1kuul') format('truetype'), url('fonts/icomoon.svg?-y1kuul#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal; }
+
+[class^="kramdown-toolbar-"], [class*=" kramdown-toolbar-"] {
+  font-family: 'icomoon' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.kramdown-toolbar-image:before {
+  content: "\e600"; }
+
+.kramdown-toolbar-video:before {
+  content: "\e60a"; }
+
+.kramdown-toolbar-undo:before {
+  content: "\e601"; }
+
+.kramdown-toolbar-redo:before {
+  content: "\e602"; }
+
+.kramdown-toolbar-quote:before {
+  content: "\e60b"; }
+
+.kramdown-toolbar-stats:before {
+  content: "\e60d"; }
+
+.kramdown-toolbar-ul:before {
+  content: "\e603"; }
+
+.kramdown-toolbar-ol:before {
+  content: "\e604"; }
+
+.kramdown-toolbar-link:before {
+  content: "\e605"; }
+
+.kramdown-toolbar-heading:before {
+  content: "\e60c"; }
+
+.kramdown-toolbar-bold:before {
+  content: "\e606"; }
+
+.kramdown-toolbar-italic:before {
+  content: "\e607"; }
+
+.kramdown-toolbar-strike:before {
+  content: "\e608"; }
+
+.kramdown-toolbar-code:before {
+  content: "\e609"; }
+
+.kramdown-toolbar-outdent:before {
+  content: "\e60f"; }
+
+.kramdown-toolbar-indent:before {
+  content: "\e60e"; }
+
+.CodeMirror {
+  height: 400px; }
+
+.CodeMirror-scroll {
+  /* Set scrolling behaviour here */
+  overflow: auto;
+  cursor: text; }
+
+/* PADDING */
+.CodeMirror-lines {
+  padding: 4px 0;
+  /* Vertical padding around content */ }
+
+.CodeMirror pre {
+  padding: 0 4px;
+  /* Horizontal padding of content */ }
+
+.CodeMirror-scrollbar-filler {
+  background-color: white;
+  /* The little square between H and V scrollbars */ }
+
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid black; }
+
+/* Shown when moving in bi-directional text */
+.CodeMirror div.CodeMirror-secondarycursor {
+  border-left: 1px solid silver; }
+
+.CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor {
+  width: auto;
+  border: 0;
+  background: #7e7; }
+
+.CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursors {
+  z-index: 1; }
+
+.cm-animate-fat-cursor {
+  width: auto;
+  border: 0;
+  -webkit-animation: blink 1.06s steps(1) infinite;
+  -moz-animation: blink 1.06s steps(1) infinite;
+  animation: blink 1.06s steps(1) infinite; }
+
+@-moz-keyframes blink {
+  0% {
+    background: #7e7; }
+
+  50% {
+    background: none; }
+
+  100% {
+    background: #7e7; } }
+
+@-webkit-keyframes blink {
+  0% {
+    background: #7e7; }
+
+  50% {
+    background: none; }
+
+  100% {
+    background: #7e7; } }
+
+@keyframes blink {
+  0% {
+    background: #7e7; }
+
+  50% {
+    background: none; }
+
+  100% {
+    background: #7e7; } }
+
+/* Can style cursor different in overwrite (non-insert) mode */
+/* The rest of this file contains styles related to the mechanics of
+   the editor. You probably shouldn't touch them. */
+.CodeMirror {
+  position: relative;
+  overflow: hidden; }
+
+.CodeMirror-scroll {
+  padding-top: 12px;
+  /* 30px is the magic margin used to hide the element's real scrollbars */
+  /* See overflow: hidden in .CodeMirror, and the paddings in .CodeMirror-sizer */
+  margin-bottom: -30px;
+  margin-right: -30px;
+  padding-bottom: 30px;
+  padding-right: 30px;
+  height: 100%;
+  outline: none;
+  /* Prevent dragging from highlighting the element */
+  position: relative; }
+
+.CodeMirror-sizer {
+  position: relative; }
+
+/* The fake, visible scrollbars. Used to force redraw during scrolling
+   before actuall scrolling happens, thus preventing shaking and
+   flickering artifacts. */
+.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler {
+  position: absolute;
+  z-index: 6;
+  display: none; }
+
+.CodeMirror-vscrollbar {
+  right: 0;
+  top: 0;
+  overflow-x: hidden;
+  overflow-y: scroll; }
+
+.CodeMirror-hscrollbar {
+  bottom: 0;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll; }
+
+.CodeMirror-scrollbar-filler {
+  right: 0;
+  bottom: 0;
+  z-index: 6; }
+
+.CodeMirror-lines {
+  cursor: text; }
+
+.CodeMirror pre {
+  /* Reset some styles that the rest of the page might have set */
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  border-width: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  line-height: inherit;
+  color: inherit;
+  z-index: 2;
+  position: relative;
+  overflow: visible; }
+
+.CodeMirror-wrap pre {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: normal; }
+
+.CodeMirror-linebackground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 0; }
+
+.CodeMirror-linewidget {
+  position: relative;
+  z-index: 2;
+  overflow: auto; }
+
+.CodeMirror-widget {
+  display: inline-block; }
+
+.CodeMirror-wrap .CodeMirror-scroll {
+  overflow-x: hidden; }
+
+.CodeMirror-measure {
+  position: absolute;
+  width: 100%;
+  height: 0px;
+  overflow: hidden;
+  visibility: hidden; }
+
+.CodeMirror-measure pre {
+  position: static; }
+
+.CodeMirror div.CodeMirror-cursor {
+  position: absolute;
+  border-right: none;
+  width: 0; }
+
+div.CodeMirror-cursors {
+  visibility: hidden;
+  position: relative;
+  z-index: 3; }
+
+.CodeMirror-focused div.CodeMirror-cursors {
+  visibility: visible; }
+
+.CodeMirror-selected {
+  background: #d9d9d9; }
+
+.CodeMirror-focused .CodeMirror-selected {
+  background: #BDC3C7; }
+
+.cm-searching {
+  background: #ffa;
+  background: rgba(255, 255, 0, 0.4); }
+
+/* IE7 hack to prevent it from returning funny offsetTops on the spans */
+.CodeMirror span {
+  *vertical-align: text-bottom; }
+
+.CodeMirror {
+  height: 450px; }
+
+:-webkit-full-screen {
+  background: #f9f9f5;
+  padding: 0.5em 1em;
+  width: 100%;
+  height: 100%; }
+
+:-moz-full-screen {
+  padding: 0.5em 1em;
+  background: #f9f9f5;
+  width: 100%;
+  height: 100%; }
+
+.cm-s-paper .cm-keyword {
+  color: #555; }
+
+.cm-s-paper .cm-atom {
+  color: #7f8c8d; }
+
+.cm-s-paper .cm-number {
+  color: #7f8c8d; }
+
+.cm-s-paper .cm-def {
+  color: #00f; }
+
+.cm-s-paper .cm-variable {
+  color: black; }
+
+.cm-s-paper .cm-variable-2 {
+  color: #555; }
+
+.cm-s-paper .cm-variable-3 {
+  color: #085; }
+
+.cm-s-paper .cm-property {
+  color: black; }
+
+.cm-s-paper .cm-operator {
+  color: black; }
+
+.cm-s-paper .cm-comment {
+  color: #959595; }
+
+.cm-s-paper .cm-string {
+  color: #7f8c8d; }
+
+.cm-s-paper .cm-string-2 {
+  color: #f50; }
+
+.cm-s-paper .cm-meta {
+  color: #555; }
+
+.cm-s-paper .cm-error {
+  color: #f00; }
+
+.cm-s-paper .cm-qualifier {
+  color: #555; }
+
+.cm-s-paper .cm-builtin {
+  color: #555; }
+
+.cm-s-paper .cm-bracket {
+  color: #997; }
+
+.cm-s-paper .cm-tag {
+  color: #7f8c8d; }
+
+.cm-s-paper .cm-attribute {
+  color: #7f8c8d; }
+
+.cm-s-paper .cm-header {
+  color: #000; }
+
+.cm-s-paper .cm-quote {
+  color: #888; }
+
+.cm-s-paper .cm-hr {
+  color: #999; }
+
+.cm-s-paper .cm-link {
+  color: #7f8c8d; }
+
+.cm-negative {
+  color: #d44; }
+
+.cm-positive {
+  color: #292; }
+
+.cm-header {
+  font-weight: bold;
+  font-size: x-large; }
+
+.cm-strong {
+  font-weight: bold; }
+
+.cm-em {
+  font-style: italic; }
+
+.cm-strike {
+  word-spacing: 0; }
+
+.cm-link {
+  text-decoration: underline; }
+
+.cm-invalidchar {
+  color: #f00; }
+
+div.CodeMirror span.CodeMirror-matchingbracket {
+  color: #0f0; }
+
+div.CodeMirror span.CodeMirror-nonmatchingbracket {
+  color: #f22; }
+
+.kramdown-box {
+  font-family: "Menlo", monospace;
+  font-weight: normal;
+  font-size: 14px;
+  border: 1px #e6e6e6 solid; }
+
+.kramdown-editor {
+  padding: 0 10px; }
+
+.kramdown-toolbar {
+  margin: 0;
+  position: relative;
+  background: #f3f3f3;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); }
+  .kramdown-toolbar, .kramdown-toolbar > li {
+    padding: 0;
+    list-style: none; }
+  .kramdown-toolbar li {
+    margin: 0;
+    display: inline-block; }
+    .kramdown-toolbar li a {
+      display: block;
+      padding: 12px;
+      position: relative;
+      outline: none;
+      border: none;
+      text-decoration: none !important;
+      text-align: left;
+      opacity: 0.9;
+      cursor: pointer;
+      color: #2c3e50; }
+      .kramdown-toolbar li a:before {
+        line-height: 14px; }
+      .kramdown-toolbar li a:hover {
+        background: #1f78d8;
+        color: #ffffff; }
+    .kramdown-toolbar li.active > a {
+      background: #1f78d8;
+      color: #ffffff; }
+    .kramdown-toolbar li.kramdown-has-dropdown .kramdown-toolbar-dropdown {
+      display: none; }
+    .kramdown-toolbar li.kramdown-has-dropdown.active .kramdown-toolbar-dropdown {
+      display: block; }
+  .kramdown-toolbar .kramdown-toolbar-dropdown {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    background: #f3f3f3;
+    overflow: hidden;
+    z-index: 1110;
+    -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
+    .kramdown-toolbar .kramdown-toolbar-dropdown li {
+      display: block;
+      width: 120px; }
+      .kramdown-toolbar .kramdown-toolbar-dropdown li a {
+        display: block;
+        text-decoration: none; }
+
+.kramdown-tooltip {
+  position: relative; }
+  .kramdown-tooltip span {
+    margin: 0;
+    padding: 4px;
+    position: absolute;
+    display: none;
+    background: #333;
+    color: #ffffff;
+    z-index: 1006; }
+
+.kramdown-statusbar {
+  background: #f3f3f3;
+  padding: 12px 0;
+  text-align: right; }
+  .kramdown-statusbar span {
+    padding: 0 18px;
+    font-size: 12px; }
+    .kramdown-statusbar span.stats {
+      float: left; }
+      .kramdown-statusbar span.stats:before {
+        font-size: 14px; }
+      .kramdown-statusbar span.stats:after {
+        content: 'Statistics'; }
+    .kramdown-statusbar span.lines:before {
+      content: "Lines: "; }
+    .kramdown-statusbar span.words:before {
+      content: "Words: "; }
+    .kramdown-statusbar span.chars:before {
+      content: "Chars: "; }
+    .kramdown-statusbar span.cursor:before {
+      content: "Cursor: "; }
+
+.kramdown-toolbar-advanced:before {
+  padding: 4px;
+  content: ''; }
