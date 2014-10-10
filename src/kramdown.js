@@ -622,26 +622,6 @@ Kramdown.prototype._render = function(){
   }
 };
 
-Kramdown.prototype._bindScrollEvent = function(){
-  if(!this.options.toolbar){
-    return;
-  }
-
-  var cm = this.cm;
-  var tb = this._getToolbar().bar;
-  cm.on('scroll', function(){
-    var cmScroll = cm.getWrapperElement().querySelector('.CodeMirror-scroll');
-    if(cmScroll.scrollTop > 0){
-      addClass(tb, 'kramdown-shadow');
-    } else {
-      removeClass(tb, 'kramdown-shadow');
-    }
-  });
-};
-
-Kramdown.prototype._bindEvents = function(){
-  this._bindScrollEvent();
-};
 
 Kramdown.prototype._bindMethods = function(object, self){
   for (var key in object){
