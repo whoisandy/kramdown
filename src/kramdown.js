@@ -1,16 +1,64 @@
-var hasClass = function(elem, className) {
-  return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+var isMac =  /Mac/.test(navigator.platform);
+
+var shortcuts = {
+  bold: 'Cmd-B',
+  italic: 'Cmd-I',
+  strike: 'Cmd-.',
+  heading: 'Cmd-Alt-.',
+  quote: 'Cmd-\'',
+  ul: 'Cmd-L',
+  ol: 'Cmd-Alt-L',
+  indent: 'Cmd-]',
+  outdent: 'Cmd-[',
+  code: 'Cmd-\/',
+  link: 'Cmd-K',
+  image: 'Cmd-Alt-I',
+  video: 'Cmd-Alt-V'
 };
 
-var addClass = function(elem, className) {
+var buttonNames = {
+  bold: 'Bold',
+  italic: 'Italic',
+  strike: 'Strike',
+  heading: 'Heading',
+  quote: 'Blockquote',
+  ul: 'Unordered List',
+  ol: 'Ordered List',
+  indent: 'Indent',
+  outdent: 'Outdent',
+  code: 'Code',
+  link: 'Link',
+  image: 'Image',
+  video: 'Video'
+};
+
+var defaults = {
+  el: '',
+  toolbar: true,
+  statusbar: true,
+  buttons: ['bold', 'italic', 'strike', 'heading', 'quote', 'ul', 'ol', 'indent', 'outdent', 'code', 'link', 'image', 'video'],
+  status: ['lines', 'words', 'chars', 'cursor'],
+  shortcutBtns: shortcuts,
+  plugins: false
+
+  // functionality to add external functionality as adding modals
+  // dialogs, overlays, etc, include in the library only.
+  // make no dependencies other than codemirror and marked
+};
+
+function hasClass(elem, className) {
+  return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+}
+
+function addClass(elem, className) {
   if(elem.className === ''){
     elem.className = className;
   } else if (!hasClass(elem, className)) {
     elem.className += ' ' + className;
   }
-};
+}
 
-var removeClass = function(elem, className) {
+function removeClass(elem, className) {
   var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
   if (hasClass(elem, className)) {
     while (newClass.indexOf(' ' + className + ' ') >= 0) {
@@ -18,42 +66,50 @@ var removeClass = function(elem, className) {
     }
     elem.className = newClass.replace(/^\s+|\s+$/g, '');
   }
-};
+}
 
-var addAttr = function(elem, name, attr){
-  elem.setAttribute(name, attr);
-};
+function addAttr(elem, name, val){
+  elem.setAttribute(name, val);
+}
 
-var removeAttr = function(elem, name){
+function removeAttr(elem, name){
   elem.removeAttribute(name);
-};
+}
 
+// TODO: Use this when integrating localStorage
+// feature built right into the editor.
+function val(el, val){
+  if(val === undefined){
+    return el.value;
+  }
+  el.value = val;
+}
 
-var offset = function(elem){
+function offset(elem){
   var off = {};
   off.left = elem.offsetLeft;
   off.top = elem.offsetTop;
 
   return off;
-};
+}
 
-var innerHeight = function(elem){
+function innerHeight(elem){
   return elem.offsetHeight;
-};
+}
 
-var innerWidth = function(elem){
+function innerWidth(elem){
   return elem.offsetWidth;
-};
+}
 
-var position = function(parent, child){
+function position(parent, child){
   var pos = {};
   pos.left = (offset(parent).left - (innerWidth(child) - innerWidth(parent))/2) + 'px';
   pos.top = (offset(parent).top - (innerHeight(child) - innerHeight(parent))/2) + 'px';
 
   return pos;
-};
+}
 
-var extendObj = function(){
+function extendObj(){
   for(var i=1; i<arguments.length; i++){
     for(var key in arguments[i]){
       if(arguments[i].hasOwnProperty(key))
@@ -63,25 +119,48 @@ var extendObj = function(){
     }
   }
   return arguments[0];
-};
+}
 
-var emptyObj = function(o){
+function emptyObj(o){
   for(var prop in o){
     if(o.hasOwnProperty(prop)){
       return false;
     }
   }
   return true;
-};
+}
 
-// TODO: Implement strike functionality in
-// markdown and include it with the markdown library,
-// so that include only codemirror and cml libraries
+function fixToolbarShortcut(text){
+  if (isMac) {
+    text = text.replace('Ctrl', 'Cmd');
+  } else {
+    text = text.replace('Cmd', 'Ctrl');
+  }
+  return text;
+}
 
-var getState = function(cm){
-  var pos;
+function mapToolbarShortcut(keyMaps, key, kd){
+  keyMaps[fixToolbarShortcut(shortcuts[key])] = function () {
+    kd._action(key);
+  };
+}
+
+function action(e){
+  var context = e.target.context;
+  var name = e.target.name;
+
+  context._action(name);
+}
+
+function getState(cm){
+  var pos, end;
   pos = pos || cm.getCursor('from');
-  var stat = cm.getTokenAt(pos);
+  end = end || cm.getCursor('to');
+  var stat = cm.getTokenAt(pos, true);
+
+  if(/^\s*(\*|\-|\+|\d+\.)\s/.test(cm.getRange(pos, end)) && cm.getLine(pos.line-1)){
+    stat.type = 'variable-2';
+  }
 
   if (!stat.type){
     return {};
@@ -96,6 +175,9 @@ var getState = function(cm){
         break;
       case 'em':
         ret.italic = true;
+        break;
+      case 'strike':
+        ret.strike = true;
         break;
       case 'header':
         ret.heading = true;
@@ -122,89 +204,147 @@ var getState = function(cm){
     }
   }
   return ret;
-};
+}
 
-var getParams = function(args){
+function getParams(args){
   var obj = {};
   obj.cm = args[1];
   obj.name = args[2];
   obj.state = getState(args[1]);
-  obj.instate = obj.state[obj.name];
+  obj.instate = obj.state[obj.name] || false;
   obj.start = args[3];
   obj.end = args[4];
   obj.startPoint = args[1].getCursor('from');
   obj.endPoint = args[1].getCursor('to');
 
   return obj;
-};
+}
 
-
-var replaceSelection = function(args){
+var replaceAction = function(args){
+  console.log('debugging replace action...');
   var params = getParams(args);
   var cm = params.cm;
   var start = params.startPoint, end = params.endPoint;
-  var selection, nstart = {}, nend = {}, nsel = {}, esel = {};
+  var selection = cm.getSelection(), nstart = {}, nend = {}, ssel = {}, esel = {};
 
-  selection = cm.getSelection();
   nstart.line = nend.line = start.line;
-  nsel.line = esel.line = start.line;
+  ssel.line = esel.line = start.line;
   params.end === null ? params.end = '' : params.end = params.end || params.start;
 
   var text = cm.getLine(start.line);
   var stext = text.slice(0, start.ch);
   var etext = text.slice(start.ch);
-  var slen = stext.length;
+  var slen;
 
   switch (params.name) {
     case 'bold':
       stext = stext.replace(/^(.*)?(\*|_){2}(\S+.*)?$/, '$1$3');
       etext = etext.replace(/^(.*\S+)(\*|_){2}(\s+.*)?$/, '$1$3');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch - 2) : nstart.ch = start.ch + 2;
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch - 2) : nstart.ch = start.ch + 2;
       params.instate ? (nend.ch = text.length, esel.ch = end.ch - 2) : nend.ch = end.ch + 2;
       break;
     case 'italic':
       stext = stext.replace(/^(.*)?(\*|_)(\S+.*)?$/, '$1$3');
       etext = etext.replace(/^(.*\S+)?(\*|_)(\s+.*)?$/, '$1$3');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch - 1) : nstart.ch = start.ch + 1;
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch - 1) : nstart.ch = start.ch + 1;
       params.instate ? (nend.ch = text.length, esel.ch = end.ch - 1) : nend.ch = end.ch + 1;
       break;
+    case 'strike':
+      stext = stext.replace(/^(.*)?(~){2}(\S+.*)?$/, '$1$3');
+      etext = etext.replace(/^(.*\S+)(~){2}(\s+.*)?$/, '$1$3');
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch - 2) : nstart.ch = start.ch + 2;
+      params.instate ? (nend.ch = text.length, esel.ch = end.ch - 2) : nend.ch = end.ch + 2;
+      break;
     case 'heading':
+      slen = stext.length;
       selection = text;
       stext = stext.replace(/^(.*)?(#\s?){2}(\S+.*)?/, '$1$3');
       etext = etext.replace(/^(.*\S+)?(\s?#){2}(\s+.*)?$/, '$1$3');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch + stext.length - slen) : (nstart.ch = 0, nsel.ch = start.ch + 3);
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch + stext.length - slen) : (nstart.ch = 0, ssel.ch = start.ch + 3);
       params.instate ? (nend.ch = text.length, esel.ch = end.ch + stext.length - slen) : (nend.ch = text.length, esel.ch = end.ch + 3);
       break;
     case 'quote':
+      slen = stext.length;
       selection = text;
       stext = stext.replace(/^(.*)?(>\s?)(\S+.*)?/, '$1$3');
       etext = etext.replace(/^(.*\S+)?(\s?)(\s+.*)?$/, '$1$3');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch + stext.length - slen) : (nstart.ch = 0, nsel.ch = start.ch + 2);
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch + stext.length - slen) : (nstart.ch = 0, ssel.ch = start.ch + 2);
       params.instate ? (nend.ch = text.length, esel.ch = end.ch + stext.length - slen): (nend.ch = text.length, esel.ch = end.ch + 2);
+      break;
+    case 'ul':
+      var i, ul, nul = [];
+      ul = selection.split('\n');
+      if(params.instate){
+        for(i = 0 ; i < ul.length; i ++){
+          nul[i] = ul[i].replace(/^(\s*)(\*|\-|\+)\s+/, '$1');
+        }
+      } else {
+        for(i = 0; i < ul.length; i++){
+          nul[i] = params.start + ul[i].replace(/^(\s*)(\d+\.)\s+/, '');
+        }
+      }
+      text = nul.join('\n');
+      params.instate ? (nstart.ch = 0, ssel.line = start.line, ssel.ch = start.ch) : (nstart.ch = start.ch + selection.length, ssel.line = start.line, ssel.ch = start.ch);
+      params.instate ? (nend.ch = selection.length, esel.line = end.line, esel.ch = end.ch) : (nend.ch = end.ch + params.end.length, esel.line = end.line, esel.ch = end.ch + params.start.length);
+      break;
+    case 'ol':
+      var j, ol, nol = [];
+      ol = selection.split('\n');
+      if(params.instate){
+        for(j = 0 ; j < ol.length; j ++){
+          nol[j] = ol[j].replace(/^(\s*)(\d+\.)\s+/, '$1');
+        }
+      } else {
+        for(j = 0; j < ol.length; j++){
+          nol[j] = 1 + j + '. ' + ol[j].replace(/^(\s*)(\*|\-|\+)\s+/, '');
+        }
+      }
+      text = nol.join('\n');
+      params.instate ? (nstart.ch = 0, ssel.line = start.line, ssel.ch = start.ch) : (nstart.ch = start.ch + selection.length, ssel.line = start.line, ssel.ch = start.ch);
+      params.instate ? (nend.ch = selection.length, esel.line = end.line, esel.ch = end.ch) : (nend.ch = end.ch + params.end.length, esel.line = end.line, esel.ch = end.ch + params.start.length);
+      break;
+    case 'indent':
+      cm.execCommand('indentMore');
+      break;
+    case 'outdent':
+      cm.execCommand('indentLess');
       break;
     case 'link':
       stext = stext.replace(/(.*)?(\[)(\S+.*)?/, '$1');
-      etext = etext.replace(/(]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\))(\s+.*)?/, '$2');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch - 1) : nstart.ch = start.ch + 1;
-      params.instate ? (nend.ch = text.length, esel.ch = end.ch - 1) : nend.ch = end.ch + 1;
+      etext = etext.replace(/(]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.?[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\))(\s+.*)?/, '$2');
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch - 1) : nstart.ch = start.ch + selection.length + 3;
+      params.instate ? (nend.ch = text.length, esel.ch = end.ch - 1) : nend.ch = end.ch + params.end.length;
       break;
     case 'image':
       stext = stext.replace(/(.*)?(!\[)(\S+.*)?/, '$1');
-      etext = etext.replace(/(]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\))(\s+.*)?/, '$2');
-      params.instate ? (nstart.ch = 0, nsel.ch = start.ch - 2) : nstart.ch = start.ch + 2;
-      params.instate ? (nend.ch = text.length, esel.ch = end.ch - 2) : nend.ch = end.ch + 2;
+      etext = etext.replace(/(]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.?[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\))(\s+.*)?/, '$2');
+      params.instate ? (nstart.ch = 0, ssel.ch = start.ch - 2) : nstart.ch = start.ch + selection.length + 4;
+      params.instate ? (nend.ch = text.length, esel.ch = end.ch - 2) : nend.ch = end.ch + params.end.length + 1;
       break;
     default:
       break;
   }
 
-  if(params.instate){
-    cm.replaceRange(stext + etext, nstart, nend);
-    cm.setSelection(nsel, esel);
+  if (params.name === 'indent' || params.name === 'outdent'){
+    cm.focus();
+    return;
+  }
+
+  if (params.instate){
+    if (params.name === 'ul' || params.name === 'ol'){
+      cm.replaceSelection(text, 'around');
+      cm.setSelection(ssel, esel);
+    } else {
+      cm.replaceRange(stext + etext, nstart, nend);
+      cm.setSelection(ssel, esel);
+    }
   } else {
-    if(params.name === 'heading' || params.name === 'quote'){
+    if (params.name === 'heading' || params.name === 'quote'){
       cm.replaceRange(params.start + selection + params.end, nstart, nend);
-      cm.setSelection(nsel, esel);
+      cm.setSelection(ssel, esel);
+    } else if (params.name === 'ul' || params.name === 'ol') {
+      cm.replaceSelection(text, 'around');
+      cm.setSelection(ssel, esel);
     } else {
       cm.replaceSelection(params.start + selection + params.end, 'around');
       cm.setSelection(nstart, nend);
@@ -215,87 +355,101 @@ var replaceSelection = function(args){
   return;
 };
 
-// TODO: If not in state, return, else do the
-// toggling stuff if there is no selection
-
-var toggleSelection = function(args){
+var toggleAction = function(args){
+  console.log('debugging toggle action...');
   var params = getParams(args);
+  var cm = params.cm;
+  var start = params.startPoint, end = params.endPoint;
+  var nstart = {}, nend = {}, scur = {}, ecur = {};
+
+  nstart.line = nend.line = start.line;
+  scur.line = ecur.line = start.line;
+  params.end === null ? params.end = '' : params.end = params.end || params.start;
+
+  var text = cm.getLine(start.line);
+  var stext = text.slice(0, start.ch);
+  var etext = text.slice(start.ch);
+
   switch(params.name){
     case 'bold':
-      params.instate ? console.log('Toggling bold') : console.log('Inserting bold');
+      stext = stext.replace(/(\*|_){2}/, '');
+      etext = etext.replace(/(\*|_){2}/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - 2) : nstart.ch = start.ch + params.start.length;
+      params.instate ? (nend.ch = text.length, ecur.ch = end.ch ): nend.ch = end.ch + params.end.length;
       break;
     case 'italic':
-      params.instate ? console.log('Toggling italic') : console.log('Inserting italic');
+      stext = stext.replace(/(\*|_)/, '');
+      etext = etext.replace(/(\*|_)/, '');
+      params.instate ? (nstart.ch = 0, scur = start.ch - 1) : nstart.ch = start.ch + params.start.length;
+      params.instate ? (nend.ch = text.length, ecur.ch = end.ch) : nend.ch = end.ch + params.end.length;
+      break;
+    case 'strike':
+      stext = stext.replace(/(~){2}/, '');
+      etext = etext.replace(/(~){2}/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - 2) : nstart.ch = start.ch + params.start.length;
+      params.instate ? (nend.ch = text.length, ecur.ch = end.ch ): nend.ch = end.ch + params.end.length;
       break;
     case 'heading':
-      params.instate ? console.log('Toggling heading') : console.log('Inserting heading');
+      stext = stext.replace(/(#){2}(\s?)/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - 3) : nstart.ch = start.ch + params.start.length;
+      break;
+    case 'quote':
+      stext = stext.replace(/(>\s+)/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - 2) : nstart.ch = start.ch + params.start.length;
+      break;
+    case 'ul':
+      if (start.ch > 2) return;
+      stext = stext.replace(/(\s*)(\*|\-|\+)\s+/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch) : nstart.ch = start.ch + params.start.length;
+      break;
+    case 'ol':
+      if(start.ch > 3) return;
+      stext = stext.replace(/(\s*)(\d\.)\s+/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch) : nstart.ch = start.ch + params.start.length;
+      break;
+    case 'indent':
+      cm.execCommand('indentMore');
+      break;
+    case 'outdent':
+      cm.execCommand('indentLess');
+      break;
+    case 'link':
+      stext = stext.replace(/(\[)/, '');
+      etext = etext.replace(/]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.?[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\)/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - params.start.length) : nstart.ch = start.ch + params.start.length;
+      params.instate ? (nend.ch = text.length, ecur.ch = end.ch) : nend.ch = end.ch + params.end.length;
+      break;
+    case 'image':
+      stext = stext.replace(/!\[/, '');
+      etext = etext.replace(/]\(https?:\/\/\)|]\(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.?[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*\)/, '');
+      params.instate ? (nstart.ch = 0, scur.ch = start.ch - params.start.length) : nstart.ch = start.ch + params.start.length;
+      params.instate ? (nend.ch = text.length, ecur = end.ch) : nend.ch = end.ch + params.end.length;
+      break;
+    case 'video':
       break;
     default:
       break;
   }
-};
 
-var isMac =  /Mac/.test(navigator.platform);
-
-var shortcuts = {
-  bold: 'Cmd-B',
-  italic: 'Cmd-I',
-  strike: 'Alt-S',
-  heading: 'Alt-H',
-  quote: 'Cmd-\'',
-  ul: 'Alt-U',
-  ol: 'Alt-O',
-  code: 'Cmd-\/',
-  link: 'Cmd-Alt-L',
-  image: 'Cmd-Alt-I',
-  video: 'Cmd-Alt-V'
-};
-
-var buttonNames = {
-  bold: 'Bold',
-  italic: 'Italic',
-  strike: 'Strike',
-  heading: 'Heading',
-  quote: 'Blockquote',
-  ul: 'Unordered List',
-  ol: 'Ordered List',
-  code: 'Code',
-  link: 'Link',
-  image: 'Image',
-  video: 'Video'
-};
-
-var defaults = {
-  el: '',
-  toolbar: true,
-  statusbar: true,
-  buttons: ['bold', 'italic', 'strike', 'heading', 'quote', 'ul', 'ol', 'code', 'link', 'image', 'video'],
-  status: ['lines', 'words', 'chars', 'cursor'],
-  shortcutBtns: shortcuts,
-  plugins: false
-
-  // functionality to add external functionality as adding modals
-  // dialogs, overlays, etc, include in the library only.
-  // make no dependencies other than codemirror and marked
-};
-
-var fixToolbarShortcut = function(text){
-  if (isMac) {
-    text = text.replace('Ctrl', 'Cmd');
-  } else {
-    text = text.replace('Cmd', 'Ctrl');
+  if(params.name === 'indent' || params.name === 'outdent'){
+    cm.focus();
+    return;
   }
-  return text;
-};
 
-var mapToolbarShortcut = function(keyMaps, key, kd){
-  keyMaps[fixToolbarShortcut(shortcuts[key])] = function () {
-    kd._action(key);
-  };
+  if(params.instate){
+    cm.replaceRange(stext + etext, nstart, nend);
+    cm.setCursor(scur);
+  } else {
+    cm.replaceRange(params.start + '' + params.end, start, end);
+    cm.setCursor(nstart, nend);
+  }
+
+  cm.focus();
+  return;
 };
 
 // Kramdown constructor
-var Kramdown = function(config){
+function Kramdown(config){
   var cfg, options;
   cfg = this._merge(config);
   options = this.options = extendObj({}, defaults, cfg);
@@ -303,7 +457,20 @@ var Kramdown = function(config){
     throw new Error('Kramdown requires atleast one textarea element to initialize');
   }
   this._init();
-};
+
+  // Public methods to be exposed on the created object
+  return {
+    markdown: function(){
+
+    },
+    html: function(){
+
+    },
+    save: function(){
+
+    }
+  };
+}
 
 Kramdown.prototype._merge = function(config){
   var cfg = {};
@@ -328,7 +495,7 @@ Kramdown.prototype._merge = function(config){
 
 // TODO: Look for all public methods to
 // expose on the button api
-
+// TO BE DONE AT LAST
 Kramdown.prototype._buttonApi = function(){
   var self = this;
   var check = function(){
@@ -345,10 +512,7 @@ Kramdown.prototype._buttonApi = function(){
     },
     add: function(name, title){
       check();
-      if(!title){
-        title = name.charAt(0).toUpperCase() + name.slice(1);
-      }
-
+      title !== undefined ? title : title = name.charAt(0).toUpperCase() + name.slice(1);
       var btn = this._addToolbarItem(name, title);
       return btn;
     },
@@ -358,8 +522,11 @@ Kramdown.prototype._buttonApi = function(){
     },
     addCallback: function(name, callback){
       check();
-      var btn = this._getToolbarItem(name);
-      btn.addEventListener('click', callback);
+      this._addToolbarItemCallback(name, callback);
+    },
+    addDropdown: function(button, dropdown){
+      check();
+      this._addToolbarItemDropdown(button, dropdown);
     }
   };
 };
@@ -384,7 +551,7 @@ Kramdown.prototype._pluginApi = function(plugins){
 Kramdown.prototype._initButtonApi = function(){
   try{
     this.button = {};
-    this._bindMethods(this._buttonApi(this.options.buttons), this.button);
+    this._bindMethods(this._buttonApi(), this.button);
   } catch (err) {
     console.warn(err.message);
   }
@@ -426,9 +593,13 @@ Kramdown.prototype._render = function(){
   wrapper = document.createElement('div');
   addClass(wrapper, 'kramdown-box');
 
+  // TODO: Implement a localstorage mechanism to find out
+  // whether something is stored in localstorage, and if yes
+  // then throw its value into the editor
   this.cm = CodeMirror.fromTextArea(el, {
     mode: 'markdown',
     theme: 'paper',
+    indentSize: 2,
     indentWithTabs: true,
     lineNumbers: false,
     lineWrapping: true,
@@ -455,14 +626,15 @@ Kramdown.prototype._bindScrollEvent = function(){
   if(!this.options.toolbar){
     return;
   }
+
   var cm = this.cm;
-  var self = this;
+  var tb = this._getToolbar().bar;
   cm.on('scroll', function(){
     var cmScroll = cm.getWrapperElement().querySelector('.CodeMirror-scroll');
     if(cmScroll.scrollTop > 0){
-      addClass(self.toolbar, 'kramdown-shadow');
+      addClass(tb, 'kramdown-shadow');
     } else {
-      removeClass(self.toolbar, 'kramdown-shadow');
+      removeClass(tb, 'kramdown-shadow');
     }
   });
 };
@@ -486,20 +658,22 @@ Kramdown.prototype._bindShortcuts = function(){
       mapToolbarShortcut(keyMaps, key, this);
     }
   }
-
-  // Bind the shortcuts here
   keyMaps['Enter'] = 'newlineAndIndentContinueMarkdownList';
-
-  // Implement these two functions in commands file
-  //keyMaps['Tab'] = 'tabAndIndentContinueMarkdownList';
-  //keyMaps['Shift-Tab'] = 'shiftTabAndIndentContinueMarkdownList';
 
   return keyMaps;
 };
 
+Kramdown.prototype._bindToolbarEvent = function(ev, el, listener){
+  el.addEventListener(ev, listener, false);
+};
+
+Kramdown.prototype._unbindToolbarEvent = function(ev, el, listener){
+  el.removeEventListener(ev, listener, false);
+};
+
 Kramdown.prototype._getToolbarItem = function(name){
   var item = this._getToolbar().bar;
-  return item.querySelector('.kramdown-toolbar-' + name);
+  return item.querySelector('.kramdown-toolbar-' + name).parentNode;
 };
 
 Kramdown.prototype._addToolbarItem = function(name, title){
@@ -520,8 +694,58 @@ Kramdown.prototype._removeToolbarItem = function(name){
   obj.tip.removeChild(et);
 };
 
-Kramdown.prototype._bindToolbarEvent = function(ev, el, callback){
-  el.addEventListener(ev, callback);
+Kramdown.prototype._addToolbarItemCallback = function(name, callback){
+  var btn = this._getToolbarItem(name);
+  btn.addEventListener('click', callback);
+  return btn;
+};
+
+Kramdown.prototype._addToolbarItemDropdown = function(button, dropdown){
+  var ul, li, link;
+  ul = document.createElement('ul');
+
+  addClass(ul, 'kramdown-toolbar-dropdown');
+  addClass(button, 'kramdown-has-dropdown');
+
+  function showDropdown(e){
+    var dd = document.querySelector('.kramdown-toolbar-dropdown');
+    addClass(dd.parentNode, 'active');
+    e.stopPropagation();
+    return false;
+  }
+
+  function hideDropdown(e){
+    var dd = document.querySelector('.kramdown-toolbar-dropdown');
+    removeClass(dd.parentNode, 'active');
+    e.stopPropagation();
+    return false;
+  }
+
+  function callback(e){
+    e.target.callback();
+    hideDropdown(e);
+  }
+
+  for (var i = 0; i < dropdown.length; i++){
+    li = document.createElement('li');
+    link = document.createElement('a');
+
+    link.innerHTML = dropdown[i].name;
+    link.callback = dropdown[i].callback;
+    addAttr(link, 'href', 'javascript:void(0)');
+    addClass(link, 'kramdown-toolbar-' + dropdown[i].title);
+    this._bindToolbarEvent('click', link, callback);
+
+    li.appendChild(link);
+    ul.appendChild(li);
+  }
+
+  this._unbindToolbarEvent('click', button.querySelector('a'), action);
+  this._bindToolbarEvent('click', button, showDropdown);
+  this._bindToolbarEvent('click', document, hideDropdown);
+  button.appendChild(ul);
+
+  return button;
 };
 
 Kramdown.prototype._buildTooltipItem = function(button){
@@ -533,38 +757,36 @@ Kramdown.prototype._buildTooltipItem = function(button){
 };
 
 Kramdown.prototype._buildToolbarItem = function(name, title){
-  var li, tip, link, mover, mout;
+  var li, tip, link;
   link = document.createElement('a');
   li = document.createElement('li');
 
   addAttr(link, 'href', 'javascript:void(0)');
+  addAttr(link, 'name', name);
   addClass(link, 'kramdown-toolbar-' + name);
-
-  mover = function(e){
-    var tt = document.querySelector('.kramdown-tooltip-' + name);
-    tt.style.display = 'block';
-    tt.style.left = position(e.toElement, tt).left;
-    return false;
-  };
-
-  mout = function(){
-    var tt = document.querySelector('.kramdown-tooltip-' + name);
-    tt.style.display = 'none';
-    return false;
-  };
 
   if(!buttonNames.hasOwnProperty(name)){
     buttonNames[name] = title;
   }
 
-  var self = this;
-  link.addEventListener('click', function(){
-    self._action(name);
+  function mover(e){
+    var tt = document.querySelector('.kramdown-tooltip-' + name);
+    tt.style.display = 'block';
+    tt.style.left = position(e.toElement, tt).left;
     return false;
-  });
+  }
 
-  this._bindToolbarEvent('mouseover', li, mover);
-  this._bindToolbarEvent('mouseout', li, mout);
+  function mout(){
+    var tt = document.querySelector('.kramdown-tooltip-' + name);
+    tt.style.display = 'none';
+    return false;
+  }
+
+  link.context = this;
+  link.name = name;
+  this._bindToolbarEvent('click', link, action);
+  this._bindToolbarEvent('mouseover', link, mover);
+  this._bindToolbarEvent('mouseout', link, mout);
 
   tip = this._buildTooltipItem(name);
   li.appendChild(link);
@@ -647,7 +869,7 @@ Kramdown.prototype._createStatusbar = function(status){
   addClass(statusbar, 'kramdown-statusbar');
 
   var stats = document.createElement('span');
-  addClass(stats, 'kd-stats');
+  addClass(stats, 'stats');
 
   statusbar.appendChild(stats);
 
@@ -663,13 +885,12 @@ Kramdown.prototype._createStatusbar = function(status){
 // else break it from here
 // If new button added via api, then
 // can include it as a plugin
-
 Kramdown.prototype._action = function(name){
   var cm = this.cm, action;
   if(cm.getSelection() !== ''){
-    action = replaceSelection;
+    action = replaceAction;
   } else {
-    action = toggleSelection;
+    action = toggleAction;
   }
 
   switch(name){
@@ -679,11 +900,26 @@ Kramdown.prototype._action = function(name){
     case 'italic':
       this._exec(action, cm, name, '*');
       break;
+    case 'strike':
+      this._exec(action, cm, name, '~~');
+      break;
     case 'heading':
       this._exec(action, cm, name, '## ', null);
       break;
     case 'quote':
       this._exec(action, cm, name, '> ', null);
+      break;
+    case 'ul':
+      this._exec(action, cm, name, '- ', null);
+      break;
+    case 'ol':
+      this._exec(action, cm, name, '1. ', null);
+      break;
+    case 'indent':
+      this._exec(action, cm, name, null, null);
+      break;
+    case 'outdent':
+      this._exec(action, cm, name, null, null);
       break;
     case 'link':
       this._exec(action, cm, name, '[', '](http://)');
@@ -691,10 +927,12 @@ Kramdown.prototype._action = function(name){
     case 'image':
       this._exec(action, cm, name, '![', '](http://)');
       break;
+    case 'video':
+      this._exec(action, cm, name, '<iframe src="', '"></iframe>');
+      break;
     default:
       break;
   }
-
 };
 
 Kramdown.prototype._exec = function(action){
