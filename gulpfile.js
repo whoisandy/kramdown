@@ -3,8 +3,8 @@ var gulp = require('gulp'),
 
 var jsFiles = [
   'src/markdown.js',
-  'src/kramdown.js',
-  'src/commands.js'
+  'src/commands.js',
+  'src/kramdown.js'
 ];
 
 gulp.task('connect', function(){
