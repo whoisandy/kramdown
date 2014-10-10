@@ -11,3 +11,6 @@ $toolbarBtnTextColorHover: #ffffff;
 // Statusbar config
 $statusBarBgColor: $toolbarBgColor;
 $statusBarBorderColor: $toolbarBorderColor;
+
+// Editor Box config
+$boxBorderColor: darken($toolbarBgColor, 5%);
