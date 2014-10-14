@@ -61,12 +61,14 @@
                             title: 'Another button',
                             shortcut: 'Cmd-D'
                         });
+                        this.button.remove('bold');
                         this.button.addCallback('another', this.colors.log);
                         var dropdown = [
                             {
                                 title: 'booyah',
                                 name: 'Booyah',
-                                callback: this.expander.textExpander
+                                callback: this.expander.textExpander,
+                                shortcut: 'Cmd-Alt-='
                             },
                             {
                                 title: 'Whoaaa',
