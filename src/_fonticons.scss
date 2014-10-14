@@ -19,6 +19,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[class^="kramdown-toolbar-"], [class*=" kramdown-toolbar-"] {
+  &:before{
+    content: "\e610";
+  }
+}
+
 .kramdown-toolbar-image:before {
   content: "\e600";
 }
