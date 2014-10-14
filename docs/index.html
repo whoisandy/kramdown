@@ -6,6 +6,7 @@
         <title>Kramdown Editor</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <link rel="stylesheet" href="../vendor/codemirror/addon/dialog/dialog.css"/>
         <link rel="stylesheet" href="kramdown.css"/>
         <style type="text/css">
             body{
@@ -39,6 +40,9 @@
         <!-- Vendor scripts -->
         <script src="../vendor/codemirror/lib/codemirror.js"></script>
         <script src="../vendor/codemirror/mode/xml/xml.js"></script>
+        <script src="../vendor/codemirror/addon/search/searchcursor.js"></script>
+        <script src="../vendor/codemirror/addon/dialog/dialog.js"></script>
+        <script src="../vendor/codemirror/addon/search/search.js"></script>
         <script src="kramdown.js"></script>
 
         <!-- Kramdown library -->
@@ -48,26 +52,32 @@
             KramdownPlugins.expander = function(){
                 return {
                     init: function () {
-                        var btn = this.button.add('advanced', 'Advanced');
+                        var btn = this.button.add({
+                            name: 'advanced',
+                            title: 'Advanced button here'
+                        });
+                        var another = this.button.add({
+                            name: 'another',
+                            title: 'Another button',
+                            shortcut: 'Cmd-D'
+                        });
+                        this.button.addCallback('another', this.colors.log);
                         var dropdown = [
                             {
-                                title: 'insertlink',
-                                name: 'Insert link',
+                                title: 'booyah',
+                                name: 'Booyah',
                                 callback: this.expander.textExpander
                             },
                             {
-                                title: 'removelink',
-                                name: 'Remove link',
-                                callback: this.expander.log
+                                title: 'Whoaaa',
+                                name: 'whoa',
+                                callback: this.colors.log
                             }
                         ];
                         this.button.addDropdown(btn, dropdown);
                     },
                     textExpander: function () {
-                        this.colors.colorize();
-                    },
-                    log: function(){
-                        console.log('simple log message');
+                        console.log('Booyahh...');
                     }
                 };
             };
@@ -75,13 +85,13 @@
             KramdownPlugins.colors = function(){
                 return {
                     init: function(){
-                        this.colors.log();
+                        this.colors.colorize();
                     },
                     colorize: function(){
                         console.log('Colorizing text here...')
                     },
                     log: function(){
-                        console.log('Logging from the colorize plugin');
+                        console.log('Your color is #' + (~~(Math.random()*(1<<24))).toString(16));
                     }
                 };
             };
@@ -89,7 +99,7 @@
 
         <script>
             var post = new Kramdown({
-                plugins: ['expander', 'colors']
+                plugins: ['colors', 'expander']
             });
         </script>
     </body>

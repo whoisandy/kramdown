@@ -16,6 +16,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
+[class^="kramdown-toolbar-"]:before, [class*=" kramdown-toolbar-"]:before {
+  content: "\e610"; }
+
 .kramdown-toolbar-image:before {
   content: "\e600"; }
 
@@ -65,7 +68,8 @@
   content: "\e60e"; }
 
 .CodeMirror {
-  height: 400px; }
+  height: 400px;
+  padding: 0 10px; }
 
 .CodeMirror-scroll {
   /* Set scrolling behaviour here */
@@ -389,16 +393,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-size: 14px;
   border: 1px #e6e6e6 solid; }
 
-.kramdown-editor {
-  padding: 0 10px; }
-
 .kramdown-toolbar {
   margin: 0;
   position: relative;
   background: #f3f3f3;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); }
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  z-index: 1110; }
   .kramdown-toolbar, .kramdown-toolbar > li {
     padding: 0;
     list-style: none; }
@@ -431,35 +433,42 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   .kramdown-toolbar .kramdown-toolbar-dropdown {
     margin: 0;
     padding: 0;
+    min-width: 180px;
     position: absolute;
     background: #f3f3f3;
     overflow: hidden;
-    z-index: 1110;
-    -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); }
+    z-index: 1008;
+    -webkit-box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.25); }
     .kramdown-toolbar .kramdown-toolbar-dropdown li {
-      display: block;
-      width: 120px; }
+      display: block; }
       .kramdown-toolbar .kramdown-toolbar-dropdown li a {
         display: block;
-        text-decoration: none; }
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.07); }
+    .kramdown-toolbar .kramdown-toolbar-dropdown:before, .kramdown-toolbar .kramdown-toolbar-dropdown a:before {
+      content: '' !important; }
 
 .kramdown-tooltip {
-  position: relative; }
+  position: absolute; }
   .kramdown-tooltip span {
     margin: 0;
-    padding: 4px;
-    position: absolute;
+    padding: 4px 8px;
+    position: relative;
     display: none;
     background: #333;
+    font-size: 12px;
     color: #ffffff;
     z-index: 1006; }
 
 .kramdown-statusbar {
   background: #f3f3f3;
   padding: 12px 0;
-  text-align: right; }
+  text-align: right;
+  -webkit-box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px -1px rgba(0, 0, 0, 0.25); }
   .kramdown-statusbar span {
     padding: 0 18px;
     font-size: 12px; }
@@ -477,7 +486,3 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
       content: "Chars: "; }
     .kramdown-statusbar span.cursor:before {
       content: "Cursor: "; }
-
-.kramdown-toolbar-advanced:before {
-  padding: 4px;
-  content: ''; }

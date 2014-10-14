@@ -23,4 +23,5 @@
 <glyph unicode="&#xe60d;" d="M0 64h512v-64h-512zM64 192h64v-96h-64zM160 320h64v-224h-64zM256 224h64v-128h-64zM352 416h64v-320h-64z" />
 <glyph unicode="&#xe60e;" d="M0 448h512v-64h-512zM192 352h320v-64h-320zM192 256h320v-64h-320zM192 160h320v-64h-320zM0 64h512v-64h-512zM0 128v192l128-96z" />
 <glyph unicode="&#xe60f;" d="M0 448h512v-64h-512zM192 352h320v-64h-320zM192 256h320v-64h-320zM192 160h320v-64h-320zM0 64h512v-64h-512zM128 320v-192l-128 96z" />
+<glyph unicode="&#xe610;" d="M64 416h384v-384h-384z" />
 </font></defs></svg>
