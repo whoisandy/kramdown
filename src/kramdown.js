@@ -68,22 +68,6 @@ var toolbarBtns = {
   }
 };
 
-var shortcuts = {
-  bold: 'Cmd-B',
-  italic: 'Cmd-I',
-  strike: 'Cmd-.',
-  heading: 'Cmd-Alt-.',
-  quote: 'Cmd-\'',
-  ul: 'Cmd-L',
-  ol: 'Cmd-Alt-L',
-  indent: 'Cmd-]',
-  outdent: 'Cmd-[',
-  code: 'Cmd-\/',
-  link: 'Cmd-K',
-  image: 'Cmd-Alt-I',
-  video: 'Cmd-Alt-V'
-};
-
 var defaults = {
   el: '',
   focus: false,
@@ -591,6 +575,14 @@ var buttonApi = function(){
     return document.querySelector('.kramdown-tooltip');
   }
 
+  function bindShortcut(name, callback){
+    self.editor.options['extraKeys'][name] = callback;
+  }
+
+  function unbindShortcut(name){
+    delete self.editor.options['extraKeys'][name];
+  }
+
   var api = {
     getToolbarItem: function(name){
       var toolbar = getToolbar();
@@ -638,12 +630,14 @@ var buttonApi = function(){
       bar = toolbar.querySelector('.kramdown-toolbar-' + name);
       tip = tooltip.querySelector('.kramdown-tooltip-' + name);
 
-      self._unbindShortcuts(self.editor.options.extraKeys, shortcuts[name]);
+      unbindShortcut(toolbarBtns[name].shortcut);
       toolbar.removeChild(bar.parentNode);
       tooltip.removeChild(tip);
     },
     addToolbarItemCallback: function(name, callback){
-      var btn = api.getToolbarItem(name);
+      var btn;
+      btn = api.getToolbarItem(name);
+      bindShortcut(name, callback);
       btn.addEventListener('click', callback);
 
       return btn;
@@ -684,6 +678,10 @@ var buttonApi = function(){
           attr(link, 'href', 'javascript:void(0)');
           addClass(link, 'kramdown-toolbar-' + dropdown[i].title);
           bindEvent('click', link, callback);
+
+          if(dropdown[i].shortcut){
+            bindShortcut(dropdown[i].shortcut, dropdown[i].callback);
+          }
 
           item.appendChild(link);
           list.appendChild(item);
@@ -831,9 +829,6 @@ Kramdown.prototype._buildToolbarShortcut = function(button){
   return map;
 };
 
-Kramdown.prototype._unbindShortcuts = function(keys, name){
-  delete keys[name];
-};
 
 Kramdown.prototype._buildTooltipItem = function(button){
   var tt = document.createElement('span');
